@@ -18,6 +18,7 @@ import {
     TorusWalletAdapter,
     BackpackWalletAdapter
 } from '@solana/wallet-adapter-wallets';
+import { WalletConnectWalletAdapter } from '@solana/wallet-adapter-walletconnect';
 import {
     WalletModalProvider
 } from '@solana/wallet-adapter-react-ui';
@@ -25,8 +26,6 @@ import { clusterApiUrl } from '@solana/web3.js';
 import client from '../client'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
-
-import * as ga from '../lib/ga'
 import { ToastContainer } from 'react-toastify'
 
 import 'antd/dist/antd.css'
@@ -37,7 +36,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
     const router = useRouter()
    // The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
-   const network = WalletAdapterNetwork.Mainnet;
+   const network = WalletAdapterNetwork.Devnet;
 
    // You can also provide a custom RPC endpoint.
    const endpoint = useMemo(() => clusterApiUrl(network), [network]);
@@ -47,14 +46,20 @@ function MyApp({ Component, pageProps }: AppProps) {
    // of wallets that your users connect to will be loaded.
    const wallets = useMemo(
        () => [
-           new BackpackWalletAdapter(),
-           new PhantomWalletAdapter(),
-           new SlopeWalletAdapter(),
-           new SolflareWalletAdapter({ network }),
-           new TorusWalletAdapter(),
-           new LedgerWalletAdapter(),
-           new SolletWalletAdapter({ network }),
-           new SolletExtensionWalletAdapter({ network }),
+           new WalletConnectWalletAdapter({
+            network,
+            options: {
+                relayUrl: 'wss://relay.walletconnect.com',
+                // example WC app project ID
+                projectId: '1aa63340b197f51849a27bdfca922a72',
+                metadata: {
+                    name: 'Example App',
+                    description: 'Example App',
+                    url: 'https://github.com/solana-labs/wallet-adapter',
+                    icons: ['https://avatars.githubusercontent.com/u/35608259?s=200'],
+                },
+            },
+        }),
        ],
        [network]
    );
