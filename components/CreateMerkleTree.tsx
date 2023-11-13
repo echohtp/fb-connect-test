@@ -16,7 +16,8 @@ const CreateMerkleTree = (props: CreateMerkleTreeProps) => {
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     // Logic to create a Merkle Tree with the selected size
-    console.log('Creating Merkle Tree of size:', treeSize);
+    
+    
     // Implement the creation of the Merkle Tree here
 
     if (!props.wallet.connected) return
@@ -24,6 +25,8 @@ const CreateMerkleTree = (props: CreateMerkleTreeProps) => {
     if (props.wallet.signMessage == undefined) return
     if (props.wallet.signTransaction == undefined) return
 
+    console.log('Creating Merkle Tree of size:', treeSize);
+    console.log(`We have wallet ${props.wallet.publicKey?.toBase58()}`)
     const connection = new Connection(process.env.NEXT_PUBLIC_RPC!)
 
     let tx = new Transaction()
@@ -82,10 +85,14 @@ const CreateMerkleTree = (props: CreateMerkleTreeProps) => {
 
     tx.partialSign(treeKeypair)
     console.log(tx)
+    try {
     await props.wallet.signTransaction(tx)
+    }catch(e:any){
+      console.log(e)
+    }
     // const res = await connection.sendRawTransaction(tx.serialize())
     // let res = await sendRawTX(tx.serialize(), web3, connection, true)
-    // console.log(res)
+    // console.log("res", res)
 
   };
 
